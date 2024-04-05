@@ -1,0 +1,127 @@
+type CanisterError = variant {
+  AttemptedSelfTransfer;
+  CertificateAlreadyExists;
+  TokenNotFound;
+  NotAuthorizedAsCustodian;
+  NotAuthorizedAsOwner;
+  OwnerNotFound;
+  Other : text;
+  NotAuthorizedAsOperator;
+  TransactionNotFound;
+};
+type CertificateData = record { data : Data; name : text };
+type CertificateMetaData = record {
+  owner : principal;
+  properties : vec record { text; GenericValue };
+  is_burned : bool;
+  burned_at : opt nat64;
+  burned_by : opt principal;
+  minted_at : nat64;
+  minted_by : principal;
+};
+type Data = variant { Raw : vec nat8; Link : text };
+type GenericValue = variant {
+  Nat64Content : nat64;
+  Nat32Content : nat32;
+  BoolContent : bool;
+  Nat8Content : nat8;
+  Int64Content : int64;
+  IntContent : int;
+  NatContent : nat;
+  Nat16Content : nat16;
+  Int32Content : int32;
+  Int8Content : int8;
+  FloatContent : float64;
+  Int16Content : int16;
+  BlobContent : vec nat8;
+  NestedContent : Vec;
+  Principal : principal;
+  TextContent : text;
+};
+type HealthRecords = record {
+  surgeries : vec Surgery;
+  immunizations : vec Immunization;
+  name : text;
+  family_history : vec text;
+  lifestyle_factors : LifestyleFactors;
+  medications : vec text;
+  conditions : vec text;
+  date_of_birth : text;
+  allergies : vec text;
+  vitals : vec VitalSigns;
+};
+type Immunization = record { date : text; name : text };
+type LifestyleFactors = record {
+  alcohol_consumption : text;
+  smoking : bool;
+  exercise_frequency : text;
+};
+type Result = variant { Ok : nat; Err : CanisterError };
+type Result_1 = variant { Ok; Err : CanisterError };
+type Result_2 = variant { Ok : nat64; Err : CanisterError };
+type Result_3 = variant { Ok : vec nat64; Err : CanisterError };
+type Result_4 = variant { Ok : vec CertificateMetaData; Err : CanisterError };
+type Result_5 = variant { Ok : CertificateData; Err : CanisterError };
+type Result_6 = variant { Ok : CertificateMetaData; Err : CanisterError };
+type Result_7 = variant { Ok : principal; Err : CanisterError };
+type Surgery = record { date : text; name : text; surgeon : text };
+type Vec = vec record {
+  text;
+  variant {
+    Nat64Content : nat64;
+    Nat32Content : nat32;
+    BoolContent : bool;
+    Nat8Content : nat8;
+    Int64Content : int64;
+    IntContent : int;
+    NatContent : nat;
+    Nat16Content : nat16;
+    Int32Content : int32;
+    Int8Content : int8;
+    FloatContent : float64;
+    Int16Content : int16;
+    BlobContent : vec nat8;
+    NestedContent : Vec;
+    Principal : principal;
+    TextContent : text;
+  };
+};
+type VitalSigns = record {
+  blood_pressure : text;
+  temperature : float32;
+  date : text;
+  respiration_rate : nat32;
+  heart_rate : nat32;
+};
+service : {
+  balanceOf : (principal) -> (Result) query;
+  burnToken : (nat64) -> (Result_1);
+  createNewHealthRecord : (
+      principal,
+      text,
+      opt nat64,
+      HealthRecords,
+      opt vec record { text; GenericValue },
+    ) -> (Result_2);
+  deleteUserRecords : (principal) -> (Result_3) query;
+  getCanisterCustodians : () -> (vec principal) query;
+  getCanisterCycles : () -> (nat) query;
+  getHealthMetadata : (principal) -> (Result_4) query;
+  getTokenData : (nat64) -> (Result_5) query;
+  getTokenMetadata : (nat64) -> (Result_6) query;
+  getUserRecords : (principal) -> (Result_3) query;
+  getUserRecordsByDate : (text) -> (Result_7) query;
+  getUserRecordsByLocation : (text) -> (Result_7) query;
+  getUserRecordsByName : (text) -> (Result_7) query;
+  ownerOf : (nat64) -> (Result_7) query;
+  setCanisterCustodians : (vec principal) -> ();
+  totalSupply : () -> (nat) query;
+  totalUniqueHolders : () -> (nat) query;
+  updateHealthRecord : (
+      principal,
+      text,
+      opt nat64,
+      HealthRecords,
+      opt vec record { text; GenericValue },
+    ) -> (Result_2);
+}
